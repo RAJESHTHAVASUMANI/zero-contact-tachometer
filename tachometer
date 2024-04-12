@@ -1,0 +1,39 @@
+#include <iostream>
+#include <chrono>
+#include <thread>
+int readSensor() {
+    // Simulated sensor reading
+    static int value = 0;
+    value += rand() % 100; // Simulated change in reading
+    return value;
+}
+// Function to calculate RPM (Rotations Per Minute) from sensor readings
+int calculateRPM(int sensorReading, int numPulsesPerRevolution, int samplingIntervalMs) {
+    // Convert sensor reading to revolutions per minute (RPM)
+    int revolutions = sensorReading / numPulsesPerRevolution;
+    int millisecondsPerMinute = 60000; // 60 seconds * 1000 milliseconds
+    return (revolutions * millisecondsPerMinute) / samplingIntervalMs;
+}
+// Function to calculate RPS (Rotations Per Second) from RPM
+double calculateRPS(int rpm) {
+    return static_cast<double>(rpm) / 60.0; // 60 seconds in a minute
+}
+int main() {
+    const int numPulsesPerRevolution = 2; // Example: 2 pulses per revolution from the sensor
+    const int samplingIntervalMs = 1000; // Example: Sampling interval of 1000 milliseconds
+    while (true) {
+        // Read data from sensor
+        int sensorReading = readSensor();
+        // Calculate RPM
+        int rpm = calculateRPM(sensorReading, numPulsesPerRevolution, samplingIntervalMs);
+        // Calculate RPS
+        double rps = calculateRPS(rpm);
+        // Print RPM and RPS
+        std::cout << "Current RPM: " << rpm << std::endl;
+        std::cout << "Current RPS: " << rps << std::endl;
+        // Delay for the sampling interval
+        std::this_thread::sleep_for(std::chrono::milliseconds(samplingIntervalMs));
+    }
+
+    return 0;
+}
